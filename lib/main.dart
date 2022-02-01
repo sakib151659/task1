@@ -1,115 +1,224 @@
 import 'package:flutter/material.dart';
 
+import 'inputDecoration.dart';
+
 void main() {
-  runApp(const MyApp());
+  runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
-
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // Try running your application with "flutter run". You'll see the
-        // application has a blue toolbar. Then, without quitting the app, try
-        // changing the primarySwatch below to Colors.green and then invoke
-        // "hot reload" (press "r" in the console where you ran "flutter run",
-        // or simply save your changes to "hot reload" in a Flutter IDE).
-        // Notice that the counter didn't reset back to zero; the application
-        // is not restarted.
-        primarySwatch: Colors.blue,
-      ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      title: "Test",
+      home: TestPage(),
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({Key? key, required this.title}) : super(key: key);
-
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
-
-  final String title;
-
-  @override
-  State<MyHomePage> createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
-
-  void _incrementCounter() {
-    setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _counter++;
-    });
-  }
+class TestPage extends StatelessWidget {
+  final _formKey = GlobalKey<FormState>();
+  String comments = '';
+  String error = '';
+  bool checked = false;
+  final snackBarMsgUnchecked = SnackBar(
+    content: Text('Unchecked'),
+    duration: Duration (seconds: 3),
+    backgroundColor: Colors.red,
+  );
 
   @override
   Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
     return Scaffold(
-      appBar: AppBar(
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
-        title: Text(widget.title),
-      ),
-      body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
-        child: Column(
-          // Column is also a layout widget. It takes a list of children and
-          // arranges them vertically. By default, it sizes itself to fit its
-          // children horizontally, and tries to be as tall as its parent.
-          //
-          // Invoke "debug painting" (press "p" in the console, choose the
-          // "Toggle Debug Paint" action from the Flutter Inspector in Android
-          // Studio, or the "Toggle Debug Paint" command in Visual Studio Code)
-          // to see the wireframe for each widget.
-          //
-          // Column has various properties to control how it sizes itself and
-          // how it positions its children. Here we use mainAxisAlignment to
-          // center the children vertically; the main axis here is the vertical
-          // axis because Columns are vertical (the cross axis would be
-          // horizontal).
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text(
-              'You have pushed the button this many times:',
-            ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headline4,
-            ),
-          ],
+      appBar: AppBar(title: Text("Test")),
+      body: Container(
+        child: Center(
+          child: RaisedButton(
+            color: Colors.redAccent,
+            textColor: Colors.white,
+            onPressed: () {
+              testAlert(context);
+            },
+            child: Text("popUp"),
+          ),
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
+    );
+  }
+
+  void testAlert(BuildContext context) {
+    showDialog(context: context,
+        builder: (context) => AlertDialog(
+          title:
+          Center(
+            child: Text('Task 1!',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: Colors.black87,
+                  fontSize: 17,
+                  letterSpacing: 2,
+                )
+            ),
+          ),
+          content: Wrap(
+            children: <Widget>[
+              Form(
+                key: _formKey,
+                child: StatefulBuilder(
+                    builder: (BuildContext context, StateSetter setState) {
+                      return Column(
+                        children: <Widget>[
+                          SizedBox(height: 20.0),
+                          TextFormField(
+                              keyboardType: TextInputType.multiline,
+                              maxLines: null,
+                              decoration:textInputDecoration.copyWith(
+                                hintText: 'Your Comments',
+                                prefixIcon: Icon(Icons.message, ),
+                              ),
+                              validator: (val) => val!.isEmpty? 'Write your comments' : null ,
+                              onChanged: (val){
+                                setState(()=> comments = val);
+
+                              }
+                          ),
+
+                          SizedBox(height: 20.0),
+                          FittedBox(
+                            child: Row(
+                              children: <Widget>[
+                               SizedBox(
+                                 height: 24,
+                                 width: 24,
+                                 child: Checkbox(
+                                      value: this.checked,
+                                      onChanged: (checked) {
+                                        setState(() {
+                                          this.checked = checked!;
+                                        });
+                                      },
+                                      activeColor: Colors.green,
+                                      focusColor: Colors.white,
+                                    ),
+                               ),
+
+
+                                InkWell(
+                                  child: Text('This is check box',style: TextStyle(color: Colors.black54,
+                                    fontSize: 15,
+                                  ),
+                                  ),
+                                  onTap: (){
+                                    setState(() {
+                                      checked = !checked;
+                                    });
+                                  },
+                                ),
+                                SizedBox(width: 10,),
+                                Icon(Icons.hide_source, color: Colors.white,)
+
+                              ],
+                            ),
+                          ),
+
+                          SizedBox(height: 20.0),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: <Widget>[
+                              RaisedButton(
+                                  color: Colors.red,
+                                  child: Text(
+                                    'Close',
+                                    style: TextStyle(color: Colors.white),
+                                  ),
+                                  onPressed: () {
+                                    Navigator.of(context).pop();
+                                    setState(() {
+                                      checked = false;
+                                    });
+                                  }
+                              ),
+                              SizedBox(width : 10.0),
+
+                              RaisedButton(
+                                  color: Colors.green,
+                                  child: Text(
+                                    'Submit',
+                                    style: TextStyle(color: Colors.white),
+                                  ),
+                                  onPressed: () async{
+                                    if(_formKey.currentState!.validate() & checked ){
+                                      Navigator.of(context).pop();
+                                      // showDialog(context: context,
+                                      //     builder: (context) => AlertDialog(
+                                      //       title: Center(child: Text(comments,style:TextStyle(color:Colors.black87, fontSize: 16, ),)),
+                                      //
+                                      //       actions: [
+                                      //         Row(
+                                      //           mainAxisAlignment: MainAxisAlignment.center,
+                                      //           children:<Widget> [
+                                      //             RaisedButton(
+                                      //                 color: Colors.red,
+                                      //                 child: Text(
+                                      //                   'Close',
+                                      //                   style: TextStyle(color: Colors.white),
+                                      //                 ),
+                                      //                 onPressed: () {
+                                      //                   Navigator.of(context).pop();
+                                      //                 }
+                                      //             ),
+                                      //           ],
+                                      //         ),
+                                      //
+                                      //       ],
+                                      //     )
+                                      // );
+                                      final snackBar = SnackBar(
+                                        content: Text(comments),
+                                        backgroundColor: (Colors.red),
+                                        duration: Duration (seconds: 3),
+                                      );
+                                      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+
+                                    }else if (_formKey.currentState!.validate() & !checked ){
+                                      final snackBar = SnackBar(
+                                        content: const Text('Checkbox is unchecked!'),
+                                        backgroundColor: (Colors.red),
+                                        duration: Duration (seconds: 3),
+                                      );
+                                      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+
+                                    }else {
+                                      final snackBar = SnackBar(
+                                        content: const Text('Checkbox and Textfield are empty!'),
+                                        backgroundColor: (Colors.red),
+                                        duration: Duration (seconds: 3),
+                                      );
+                                      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+                                    }
+
+
+                                  }
+                              ),
+
+                            ],
+                          ),
+
+                          SizedBox(height: 12.0),
+                          Text(
+                            error,
+                            style: TextStyle(color: Colors.red, fontSize: 14.0),
+                          ),
+
+                        ],
+                      );
+                    }
+                ),
+              ),
+            ],
+          ),
+
+        )
     );
   }
 }
